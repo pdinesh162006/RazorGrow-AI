@@ -35,7 +35,11 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  // Rate Limit simulation (Add actual Redis-based rate limiting here in production)
+  const response = NextResponse.next();
+  response.headers.set('X-RateLimit-Limit', '100');
+  response.headers.set('X-RateLimit-Remaining', '99');
+  return response;
 }
 
 export const config = {
