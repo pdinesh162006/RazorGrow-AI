@@ -3,25 +3,46 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FAFAF9;
+  --foreground: #0C0A09;
+  --primary: #1C1917;
+  --on-primary: #FFFFFF;
+  --secondary: #44403C;
+  --on-secondary: #FFFFFF;
+  --accent: #A16207;
+  --on-accent: #FFFFFF;
+  --card: #FFFFFF;
+  --card-foreground: #0C0A09;
+  --muted: #E8ECF0;
+  --muted-foreground: #475569;
+  --border: #D6D3D1;
+  --destructive: #DC2626;
+  --on-destructive: #FFFFFF;
+  --ring: #1C1917;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0C0A09;
+    --foreground: #FAFAF9;
+    --primary: #FFFFFF;
+    --on-primary: #1C1917;
+    --secondary: #E8ECF0;
+    --on-secondary: #0C0A09;
+    --accent: #FDE047; 
+    --on-accent: #0C0A09;
+    --card: #1C1917;
+    --card-foreground: #FAFAF9;
+    --muted: #292524;
+    --muted-foreground: #A8A29E;
+    --border: #44403C;
+    --destructive: #EF4444;
+    --on-destructive: #FFFFFF;
+    --ring: #FFFFFF;
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
 }
