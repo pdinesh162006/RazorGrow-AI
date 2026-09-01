@@ -10,7 +10,9 @@
     "postinstall": "prisma skills sync || exit 0"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.122.0",
     "@prisma/client": "^7.10.0",
+    "ai": "^7.0.87",
     "bcrypt": "^6.0.0",
     "jose": "^6.2.10",
     "jsonwebtoken": "^9.0.3",
