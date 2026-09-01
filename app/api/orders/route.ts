@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { verifyToken } from '@/lib/auth';
 import { z } from 'zod';
+import Razorpay from 'razorpay';
+import { env } from '@/lib/env';
+
+const razorpay = new Razorpay({
+  key_id: env.RAZORPAY_KEY_ID,
+  key_secret: env.RAZORPAY_KEY_SECRET,
+});
 
 const createOrderSchema = z.object({
   addressId: z.string().uuid(),
@@ -26,7 +33,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
     }
 
-    // Verify stock and compute totals
     let subtotal = 0;
     for (const item of cart.items) {
       if (item.product.stock < item.quantity) {
@@ -35,11 +41,17 @@ export async function POST(req: Request) {
       subtotal += parseFloat(item.product.price.toString()) * item.quantity;
     }
 
-    const tax = subtotal * 0.18; // 18% tax example
-    const shipping = 50; // flat rate
+    const tax = subtotal * 0.18;
+    const shipping = 50;
     const totalAmount = subtotal + tax + shipping;
 
-    // Transaction for order creation and stock decrement
+    // Create Razorpay Order
+    const rzpOrder = await razorpay.orders.create({
+      amount: Math.round(totalAmount * 100), // in paise
+      currency: 'INR',
+      receipt: `rcpt_${Date.now()}`
+    });
+
     const order = await db.$transaction(async (tx) => {
       const newOrder = await tx.order.create({
         data: {
@@ -56,9 +68,16 @@ export async function POST(req: Request) {
               price: item.product.price,
               variant: item.variant ?? undefined,
             }))
+          },
+          payment: {
+            create: {
+              amount: totalAmount,
+              currency: 'INR',
+              razorpayOrderId: rzpOrder.id
+            }
           }
         },
-        include: { items: true }
+        include: { items: true, payment: true }
       });
 
       for (const item of cart.items) {
@@ -69,7 +88,6 @@ export async function POST(req: Request) {
       }
 
       await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
-
       return newOrder;
     });
 
